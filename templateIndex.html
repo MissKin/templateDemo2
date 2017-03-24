@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+
+    <title>js模板引擎</title>
+</head>
+<body>
+
+<div id="threePage"></div>
+<hr/>no-escape 不转义HTML
+<div id="div_noescape"></div>
+<hr/>在javascript中存储模板
+<div id="div_complie"></div>
+<hr/> 嵌入子模板(include)
+<div id="div_include"></div>
+<hr/>条件表达式
+<h2 id="condi_div"></h2>
+<script src="./js/template.js"></script>
+<!--编写模版-->
+<!--简洁版-->
+    <script id="one" type="text/html">
+        <h1>{{title}}</h1>
+        <ul>
+            {{each list as value i}}
+
+            <li>索引 {{i + 1}} ：{{value.name}}</li>
+            {{/each}}
+        </ul>
+    </script>
+
+    <!--noescape 未转义-->
+    <script id="no_escape" type="text/html">
+        <p>不转义：{{#text}}</p>
+        <p>默认转义： {{text}}</p>
+    </script>
+   <!--在javascript中存放模板-->
+
+    <!--嵌入子模板-->
+    <script id="includeS" type="text/html">
+        <h1>{{title}}</h1>
+       {{include 'includeData'}}
+    </script>
+    <script type="text/html" id="includeData">
+        <ul>
+            {{each list as value i}}
+                <li>索引 {{i+1}}: {{value}}</li>
+            {{/each}}
+        </ul>
+    </script>
+
+    <!--条件表达式-->
+    <script type="text/html" id="conditionTem">
+        {{if admin}}
+            <p>admin</p>
+            {{else if code>0}}
+            <p>master</p>
+            {{else}}
+            <p>error!</p>
+        {{/if}}
+    </script>
+<script type="text/javascript">
+    var data={
+        title:'标签',
+        list: [ {name:'支付宝',way:'zfb',price:'1.0'},
+            {name:'微信',way:'wx',price:'2.0'},
+            {name:'钱包',way:'qb',price:'3.0'}
+        ]
+    };
+
+    var html = template('one', data);
+    document.getElementById('threePage').innerHTML = html;
+
+    var escapedata={
+        text :'<span style="color:#FFF000">Hello template</span>'
+    }
+    /*
+    * noescape 未转义
+    * */
+    var escape =template('no_escape',escapedata);
+    document.getElementById('div_noescape').innerHTML=escape;
+   /*
+   * 子模板
+   * */
+    var source='<ul>'+
+            '{{each list}}'+
+            '<li>索引：{{$index+1}}:{{$value}}</li>'+
+            '{{/each}}'+
+            '</ul>';
+    var dataSource={
+        list : ['电影','电视剧','综艺','音乐']
+    }
+    var render =template.compile(source);
+    var sourceHtml =render(dataSource);
+    document.getElementById('div_complie').innerHTML=sourceHtml;
+
+    var includeData={
+        title:'嵌入字幕板',
+        list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']
+    };
+    var includeHtml = template('includeS',includeData);
+    document.getElementById('div_include').innerHTML=includeHtml;
+    /*
+    * 条件表达式
+    * */
+    var conData={
+        admin:true,
+        code:10
+    }
+    var conHtml =template('conditionTem',conData);
+    document.getElementById('condi_div').innerHTML=conHtml;
+
+
+</script>
+
+
+</body>
+</html>
